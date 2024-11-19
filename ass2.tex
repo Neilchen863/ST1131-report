@@ -1,0 +1,356 @@
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{graphicx}  % For \resizebox
+
+\setlength{\parskip}{0.5em} % 控制段落间距
+
+\newenvironment{statement}[2][Statement]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\title{\vspace{-3cm}ST1131 Report\vspace{-0.8cm}} % 用负值调整标题上方的间距
+
+\author{Chen Jiahao | A0287926J} % 替换为你的名字
+
+\date{} % 移除日期
+
+\begin{document}
+
+\maketitle
+\vspace{-2.1cm} % 调整标题与正文之间的间距
+
+\section{Introduction\vspace{-0.4cm}}
+\textbf{Main Goal of this Report:}
+This report aims to explore the dataset about cars collected in 1983, to study which variable(s) may affect fuel consumption, measured in miles per gallon (mpg).\\ 
+\textbf{About the dataset:}
+The dataset is about cars collected in 1983. Apart from the fuel consumption, other quantitative factors are as follows: cylinders, displacement, horsepower, weight, acceleration, model year. There are also three categorical variables: origin, car name, and year.\\ 
+\textbf{The steps to follow:}
+First we would use plots and conduct hypothesis testing to each variable, to observe their significance. Then we would build the linear models, checking whether they satisfy the linearity, normality and constant variance. And we adjust the model at the same time, until we find the final good one. To be the final good model, it should satisfy all the assumptions as well as have a high $R^{2}$ value.
+\section{Explore the variables and association\vspace{-0.4cm}}
+In this report, the response variable is \textbf{Fuel Consumption}. We can run through the dataset to find out its statistical summary.\\
+    \begin{minipage}{\textwidth}
+        \begin{minipage}[h]{0.5\textwidth}
+            \centering
+            \makeatletter\def\@captype{table}\makeatother\caption{Statistical Summary} 
+        
+             \begin{tabular}{cc}
+        \toprule
+        Var/Stats & Consumption(mpg) \\
+        \midrule
+        \textsf{Min.} & 9.00 \\
+        \textsf{1st Qu.} & 17.00  \\
+        \textsf{Median} & 22.75 \\
+        \textsf{Mean} & 23.45  \\
+        \textsf{3rd Qu.} & 29.00  \\
+        \textsf{Max.} & 46.60 \\
+        \bottomrule
+    \end{tabular}
+            
+            \label{a}
+        \end{minipage}
+        \begin{minipage}[h]{0.5\textwidth}
+            \centering
+            \makeatletter\def\@captype{figure}\makeatother\caption{Boxplot and Histogram}
+            \includegraphics[height=0.7\textwidth]{hist and boxplot.png}
+            
+            \label{b}   
+        \end{minipage}
+    \end{minipage}
+    \\ \\
+For other variables, we divide them into quantitative variables and categorical variables.
+\begin{itemize}
+    \item \textbf{quantitative variables} 
+\end{itemize}
+
+\centering
+\label{tb:Fitness_formations}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{cccccccc}
+    \toprule
+    Var/Stats  & \textsf{Min.} & \textsf{1st Qu.} & \textsf{Median} & \textsf{Mean} & \textsf{3rd Qu.} & \textsf{Max.} & \textsf{Understanding}\\
+    \midrule
+    \textit{Cylinders} & 3.000 & 4.000 & 4.000 & 5.472 & 8.000 & 8.000 
+    & Have a low outlier at 3, while most values are clustered around 4, 6, or 8.\\
+    \textit{Displacement} & 68.0 & 105.0 & 151.0 & 194.4 & 275.8 & 455.0 
+    & Have outliers on the higher end\\
+    \textit{Horsepower} & 46.0 & 75.0 & 93.5 & 104.5 & 126.0 & 230.0 
+    & Right-skewed, with outliers on the higher end\\
+    \textit{Weight} & 1613 & 2225 & 2804 & 2978 & 3615 & 5140 
+    & Mean close to median, a bit right skewed but not much\\
+    \textit{Acceleration} & 8.00 & 13.78 & 15.50 & 15.54 & 17.02 & 24.80 
+    & Mean almost equals to median, nearly symmetric\\
+    \textit{Model.Year} & 70.00 & 73.00 & 76.00 & 75.98 & 79.00 & 82.00 
+    & Mean almost equals to median, nearly symmetric\\
+    \bottomrule
+\end{tabular}}
+
+\begin{itemize}
+    \item \textbf{categorical variables\vspace{-0.4cm}} 
+\end{itemize}
+\begin{flushleft}
+    \small
+    \textit{origin:}  \quad  More than half are 1 (from USA), few are 2 (Europe) or 3 (Japan)\\
+    \textit{car name:} \quad Name of the car brand\\
+    \textit{year:}  \qquad 150 "early 70", 157 "late 70", 85 "80-82"\\
+\end{flushleft}
+
+
+\raggedright 
+We can tell that the response variable is \textit{quantitative}. And from the eight plots above, we can say that it also satisfies \textit{linear relationship}. But from table 1 and Figure 1, we found that the distribution of mpg is \textit{not that normal}. It is still \textbf{suitable} to fit a linear regression model for this response but we would like to make it symmetric by using log(y) or $\sqrt y$ . As a result, we would \textbf{check the association} between the response and other variables below.\\
+
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Cylinder.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Model Year.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Origin.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Year.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Acceleration.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.55\textwidth]{Consumption and Displacement.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.6\textwidth]{Consumption and Horsepower.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.5\linewidth}
+        \centering
+        \includegraphics[height=0.6\textwidth]{Consumption and Weight.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+
+\textbf{Result}: \quad From the four \textbf{histograms}, we can tell that No. of cylinders obviously is not a regressor. While \textit{year (model year)} and \textit{origin} may be regressors.\\
+\qquad From the four \textbf{scatter plots}, the absolute value of correlation of consumption and displacement, weight and horsepower are around 0.8, indicating that there may be an association between consumption and \textit{displacement} / consumption and \textit{weight}. So these three variables are also likely to be regressors.\\
+\qquad I have also done \textbf{hypothesis testing }to each variable, making H0 to be regressor not significant, it turns out that for every variable, the P-value is super small(i.e. \textless 2.2e-16), meaning that we can not directly reject any variable now.
+
+
+
+\section{Build the model}
+%第一个模型
+\subsection{Initial Model M1}
+For M1, we decided to use the three variable \textit{displacement}, \textit{weight} and \textit{origin} as regressors.
+After fitting the model in R Studio, the result is 
+\begin{center}
+$ mpg = 42.258 - 0.014 \times displacement - 0.006 \times weight + 0.414\times I(origin = Europe) + 1.985 \times I(origin = Japan) $
+\end{center}
+
+\paragraph{Checking Residual plots:}
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{1 hist.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{1 qq plot.png}
+        \label{b}   
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{1 r plot.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+The histogram and Q-Q plot indicate that the standardized residuals are not normally distributed. Additionally, the funnel shape in the third plot suggests a violation of the constant variance assumption.\\ 
+
+
+\paragraph{Outliers and influential points:}~{}
+\\There are several outliers (index = 111,243,321,324,325,382,389), but there is no influential point.
+\\
+
+\paragraph{Checking each regressor:}~{}\\
+The P-value of \textit{displacement} is 0.02 $\longrightarrow$ not very significant\\
+The P-value of \textit{weight} is 5.99e-14 $\longrightarrow$ very significant\\
+The P-value of \textit{origin2} is 0.55 $\longrightarrow$ not significant\\
+The P-value of \textit{origin3} is 0.004 $\longrightarrow$ not very significant\\
+$R^2$ value 0.706 and Adjusted $R^2$  0.703  $\longrightarrow$ Okay
+
+\paragraph{Interpretation:}~{}\\
+As our initial model, it failed to satisfy the normality, constant variable assumption. Additionally the origin regressor is not significant. As a result, we would like to delete this variable from our model.
+
+
+
+
+%第二个模型
+\subsection{Second Model M2}
+For M2, we decided to delete the variable origin and use the two variables \textit{displacement} and \textit{weight} as regressors.
+After fitting the model in R Studio, the result is 
+\begin{center}
+$ mpg = 43.778 - 0.016 \times displacement - 0.006 \times weight $
+\end{center}
+\paragraph{Checking Residual plots:}
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{2 hist.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{2 qq plot.png}
+        \label{b}   
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{2 R plot.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+The histogram and qq plot illustrate that the standard residuals are not distributed normally. And in the third plot, there appears a funnel shape, which implies that the constant variance assumption is violated.\\ 
+
+
+\paragraph{Outliers and influential points:}~{}
+\\There are several outliers (index = 321,324,325,328,382,389), but there is no influential point.
+\\
+
+\paragraph{Checking each regressor:}~{}\\
+The P-value of \textit{displacement} is 0.004 $\longrightarrow$ not very significant\\
+The P-value of \textit{weight} is 7.31e-15 $\longrightarrow$ very significant\\
+$R^2$ value 0.699 and Adjusted $R^2$  0.6974 $\longrightarrow$ Too low
+
+\paragraph{Interpretation:}~{}\\
+Given that the SR is not distributed normally as well as the constant variance assumption is violated, This model is not a strong model. As a result, we would like to remove the variable \textit{displacement}, which is not that significant. Consequently we would also introduce in a new variable \textit{horsepower}, which is also likely to be a regressor shown in Part 2.
+
+
+%第三个模型
+\subsection{Third Model M3}
+For M3, we decided to delete the variable origin and use the two variables \textit{horsepower} and \textit{weight} as regressors.
+After fitting the model in R Studio, the result is 
+\begin{center}
+$ mpg = 45.640 - 0.047 \times horsepower - 0.006 \times weight $
+\end{center}
+\paragraph{Checking Residual plots:}
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{3 hist.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{3 qq plot.png}
+        \label{b}   
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{3 r plot.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+Similar to M2, the histogram and qq plot illustrate that the standard residuals are stillnot distributed normally. And in the third plot, the funnel shape is still there, meaning that the constant variance assumption is violated.\\ 
+
+
+\paragraph{Outliers and influential points:}~{}
+\\There are several outliers (index = 321,324,325,328,382,389), but there is no influential point.\\
+P.S. The indexes of outliers are exactly the same with M2!
+\\
+
+\paragraph{Checking each regressor:}~{}\\
+The P-value of \textit{horsepower} is 2.49e-05 $\longrightarrow$ very significant\\
+The P-value of \textit{weight} is \textless 2e-16 $\longrightarrow$ very significant\\
+$R^2$ value 0.7064 and Adjusted $R^2$  0.7049 $\longrightarrow$ Better! But still needs improving
+
+\paragraph{Interpretation:}~{}\\
+The good thing is that now both regressors are significant now. However similar to M2, the SR is not distributed normally as well as the constant variance assumption is violated. This model is not a strong model. \\
+Specifically to address the constant variance issue, we would like to make mpg to be log(mpg), trying to achieve constant variance.
+
+
+
+
+
+
+
+%第四个模型
+\subsection{Fourth Model M4 (Final Model)}
+For M4, we decided to use the same two variables \textit{horsepower} and \textit{weight} as regressors, but make mpg to be log(mpg).
+After fitting the model in R Studio, the result is 
+\begin{center}
+$ log(mpg) = 4.111  -0.0003 \times horsepower  -0.002 \times weight $
+\end{center}
+\paragraph{Checking Residual plots:}
+\begin{minipage}{\textwidth}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{4 hist.png}
+        \label{a}
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{4 qq plot.png}
+        \label{b}   
+    \end{minipage}
+    \begin{minipage}[h]{0.3\linewidth}
+        \centering
+        \includegraphics[height=0.7\textwidth]{4 r plot.png}
+        \label{b}   
+    \end{minipage}
+\end{minipage}
+This time, the histogram is quite symmetric, and in the qq plot the distribution aligns quite well with the line. In the third plot, we can tell that the constant variance assumption is satisfied.\\ 
+
+
+\paragraph{Outliers and influential points:}~{}
+\\There is only one outlier (index = 382), and there is no influential point.\\
+
+
+\paragraph{Checking each regressor:}~{}\\
+The P-value of \textit{horsepower} is 1.2e-09 $\longrightarrow$ even more significant than that in M3!\\
+The P-value of \textit{weight} is \textless 2e-16 $\longrightarrow$ still very significant\\
+$R^2$ value 0.7879 and Adjusted $R^2$  0.7869 $\longrightarrow$ Good job!
+
+\paragraph{Interpretation:}~{}\\
+This time, we can say that it is a good model. It not only satisfies the normality and constant variance assumptions which the previous models failed to, but also increased the $R^2$ value, making the model better. \\
+As a result, we would declare it to be our final model.
+
+\section{Final model}
+Our final model is M4, where\\
+\begin{center}
+$ log(mpg) = 4.111  -0.0003 \times horsepower  -0.002 \times weight $
+\end{center}
+\paragraph{Effect of each variable:}~{}\\
+For a unit increase in horsepower, log(mpg) would decrease by 0.0003, meaning mpg decreased by a factor of $e^{0.0003}$. For a unit increase in weight, log(mpg) would decrease by 0.002, meaning mpg decreased by a factor of $e^{0.0002}$.
+
+
+
+
+
+
+
+
+
+
+\end{document}
